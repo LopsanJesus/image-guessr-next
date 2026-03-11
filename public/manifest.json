@@ -1,0 +1,14 @@
+{
+  "name": "ImageGuessr",
+  "short_name": "ImageGuessr",
+  "description": "Adivina la ciudad a partir de imágenes de todo el mundo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2b3647",
+  "theme_color": "#2b3647",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
