@@ -2,14 +2,6 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import ReactGA from "react-ga";
-
-const trackClick = () => {
-  ReactGA.event({
-    category: "Share",
-    action: "Copy link icon clicked",
-  });
-};
 
 const CopyLinkIcon = () => {
   const { t } = useTranslation();
@@ -19,7 +11,6 @@ const CopyLinkIcon = () => {
     const URL = typeof window !== "undefined" ? window.location.origin : "";
     navigator.clipboard.writeText(URL);
     setShowConfirmation(true);
-    trackClick();
     setTimeout(() => {
       setShowConfirmation(false);
     }, 3000);

@@ -1,18 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import ShareIcon from "@/assets/ShareIcon/ShareIcon";
+import useNavTransition from "@/hooks/useNavTransition";
 
 const TopBar = () => {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const navigate = useNavTransition();
 
   if (pathname === "/") return null;
 
   return (
-    <div className="sticky top-0 z-20">
+    <div className="sticky top-0 z-40">
       <nav className="bg-primary">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
@@ -25,12 +26,13 @@ const TopBar = () => {
             </div>
             <div className="flex items-center gap-2">
               <ShareIcon />
-              <Link
-                href="/play"
-                className="bg-secondary text-primary font-bold px-3 py-2 rounded-md text-sm font-medium"
+              <button
+                type="button"
+                onClick={() => navigate("/play")}
+                className="bg-secondary text-primary font-bold px-3 py-2 rounded-md text-sm transition-all active:scale-95"
               >
                 {t("Levels")}
-              </Link>
+              </button>
             </div>
           </div>
         </div>

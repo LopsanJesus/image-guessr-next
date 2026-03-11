@@ -1,57 +1,85 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import ReactGA from "react-ga";
-import ShareButtons from "@/components/ShareButtons/ShareButtons";
-import CTAButton from "@/components/CTAButton/CTAButton";
 import Portal from "@/components/Portal/Portal";
+import useNavTransition from "@/hooks/useNavTransition";
 
-const AlertModal = ({ level, setShowModal }) => {
+const AlertModal = ({ level, setShowModal, score, storedCities, images }) => {
   const { t } = useTranslation();
-  const router = useRouter();
+  const navigate = useNavTransition();
+  const nextLevel = parseInt(level) + 1;
+  const [copied, setCopied] = useState(false);
+
+  const buildShareText = () => {
+    const grid = images
+      .map((img) => (storedCities.includes(img.image) ? "🟩" : "⬜"))
+      .join("");
+    const url = typeof window !== "undefined" ? window.location.origin : "";
+    return `ImageGuessr ${t("Level")} ${level} ${score}/12\n${grid}\n${url}`;
+  };
+
+  const handleShare = async () => {
+    const text = buildShareText();
+    if (navigator.share) {
+      await navigator.share({ text });
+    } else {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
 
   return (
     <Portal>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-40 bg-gray-500/75" aria-hidden="true" />
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
 
-      {/* Scrollable container */}
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
           <div
-            className="relative w-full sm:max-w-3xl transform overflow-hidden rounded-lg bg-primary text-white text-left shadow-xl transition-all"
+            className="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl bg-primary text-center"
             role="dialog"
             aria-modal="true"
           >
-            <div className="px-4 pt-5 pb-4 sm:p-6">
-              <h3 className="text-lg font-medium text-white">
-                {t("You unlocked level") + (parseInt(level) + 1) + "!"}
+            {/* Header */}
+            <div className="px-6 pt-8 pb-4">
+              <div className="text-5xl mb-3">🎉</div>
+              <h3 className="text-2xl font-bold text-white">
+                {t("You unlocked level")} {nextLevel}!
               </h3>
+              <p className="text-white/60 text-sm mt-1">{t("Keep it up!")}</p>
             </div>
-            <div className="px-4 py-3 sm:px-6 flex flex-col sm:flex-row gap-2">
-              <CTAButton
-                text={t("Go")}
-                level={level}
-                onClick={() => {
-                  setShowModal(false);
-                  ReactGA.event({ category: "Modal new level unlocked", action: "Navigate to new level", label: "to -> level " + (parseInt(level) + 1) });
-                  router.push("/play/level/" + (parseInt(level) + 1));
-                }}
-              />
+
+            {/* Share result */}
+            <div className="px-6 pb-4">
               <button
                 type="button"
-                className="w-full sm:w-auto justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:text-sm"
+                onClick={handleShare}
+                className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
+                {copied ? <>✅ {t("Copied!")}</> : <>📤 {t("Share result")}</>}
+              </button>
+            </div>
+
+            {/* Navigation buttons */}
+            <div className="px-6 pb-6 flex flex-col gap-2">
+              <button
+                type="button"
+                className="w-full py-3 rounded-xl bg-secondary text-primary font-bold text-base hover:bg-yellow-400 transition-all active:scale-95"
                 onClick={() => {
                   setShowModal(false);
-                  ReactGA.event({ category: "Modal new level unlocked", action: "finish current level", label: "to -> level " + parseInt(level) });
+                  navigate("/play/level/" + nextLevel);
                 }}
+              >
+                {t("Go to level")} {nextLevel}
+              </button>
+              <button
+                type="button"
+                className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 text-sm transition-colors"
+                onClick={() => setShowModal(false)}
               >
                 {t("Let me finish")}
               </button>
-            </div>
-            <div className="my-5">
-              <ShareButtons />
             </div>
           </div>
         </div>

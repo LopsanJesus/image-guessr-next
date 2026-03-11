@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import ReactGA from "react-ga";
 
 import {
   storeItem,
@@ -58,11 +57,13 @@ const Level = () => {
   const [guessingCity, setGuessingCity] = useState({});
 
   const lastLevelAchieved = getLastLevelAchieved();
+  const isInvalidLevel = parseInt(level) < 1 || lastLevelAchieved + 1 < parseInt(level);
 
-  if (parseInt(level) < 1 || lastLevelAchieved + 1 < parseInt(level)) {
-    router.replace("/play");
-    return null;
-  }
+  useEffect(() => {
+    if (isInvalidLevel) router.replace("/play");
+  }, [isInvalidLevel, router]);
+
+  if (isInvalidLevel) return null;
 
   const images = getLevelImages(level);
   const nextLevelExists = getNumberOfLevels() !== parseInt(level);
@@ -88,14 +89,12 @@ const Level = () => {
 
   const handleInfoButtonClick = () => {
     setShowInfoModal(true);
-    ReactGA.event({ category: "Info", action: "Info button clicked", label: "level: " + level });
   };
 
   const handleImageClick = ({ imageName, imageType }) => {
     setGuessingCity({ imageName, imageType });
     setScrollPosition(typeof window !== "undefined" ? window.pageYOffset : 0);
     setShowModal(true);
-    ReactGA.event({ category: "Image", action: "Image clicked", label: "Nivel: " + level + " - " + imageName });
   };
 
   return (
@@ -177,7 +176,7 @@ const Level = () => {
       )}
 
       {showAlertModal && getNumberOfLevels() !== parseInt(level) && (
-        <AlertModal level={level} setShowModal={setShowAlertModal} />
+        <AlertModal level={level} setShowModal={setShowAlertModal} score={score} storedCities={storedCities} images={images} />
       )}
     </div>
   );

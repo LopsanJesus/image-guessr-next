@@ -25,6 +25,12 @@ const Image = ({ imageType, imageName, isStored, onClick, showTypeInHeader }) =>
   const [loaded, setLoaded] = useState(false);
   const [animating, setAnimating] = useState(false);
   const prevStored = useRef(isStored);
+  const imgRef = useRef(null);
+
+  // Fix cached images not firing onLoad
+  useEffect(() => {
+    if (imgRef.current?.complete) setLoaded(true);
+  }, []);
 
   // Trigger animation when image transitions to "stored"
   useEffect(() => {
@@ -35,9 +41,13 @@ const Image = ({ imageType, imageName, isStored, onClick, showTypeInHeader }) =>
     prevStored.current = isStored;
   }, [isStored]);
 
+  const borderClass = !isStored
+    ? showTypeInHeader ? getBorderColor(imageType) : "border-transparent"
+    : "border-green-500";
+
   return (
     <div
-      className={`image-container relative inline-block text-center cursor-pointer ${animating ? "animate-hit" : ""}`}
+      className={`image-container relative text-center cursor-pointer ${animating ? "animate-hit" : ""}`}
       onClick={() => onClick && onClick({ imageName, imageType })}
     >
       {showTypeInHeader && (
@@ -51,34 +61,26 @@ const Image = ({ imageType, imageName, isStored, onClick, showTypeInHeader }) =>
         </div>
       )}
 
-      {/* Skeleton */}
-      {!loaded && (
-        <div
-          className="skeleton-pulse rounded-lg bg-white/10"
-          style={{ width: 500, maxWidth: "100%", height: 260 }}
+      {/* Fixed-ratio container so all images are the same size */}
+      <div className={`relative w-full rounded-lg border-4 overflow-hidden ${borderClass} transition-all duration-300`} style={{ paddingBottom: "66%" }}>
+        {/* Skeleton */}
+        {!loaded && (
+          <div className="skeleton-pulse absolute inset-0 bg-white/10" />
+        )}
+        <img
+          ref={imgRef}
+          id={imageName}
+          src={"/img/" + imageName + ".jpg"}
+          onLoad={() => setLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+          alt="ImageGuessr"
         />
-      )}
-
-      <img
-        id={imageName}
-        src={"/img/" + imageName + ".jpg"}
-        width="500"
-        height="600"
-        onLoad={() => setLoaded(true)}
-        className={`rounded-lg border-4 transition-all duration-300 ${loaded ? "block" : "hidden"} ${
-          !isStored
-            ? showTypeInHeader ? getBorderColor(imageType) : "border-transparent"
-            : "border-green-500"
-        }`}
-        style={{ maxHeight: "336px" }}
-        alt="ImageGuessr"
-      />
-
-      {isStored && !showTypeInHeader && (
-        <div className="uppercase font-extrabold rounded-xl text-green-500 bg-white p-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-lg">
-          {cityNameToString(imageName, t)}
-        </div>
-      )}
+        {isStored && !showTypeInHeader && (
+          <div className="uppercase font-extrabold rounded-xl text-green-500 bg-white p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-lg">
+            {cityNameToString(imageName, t)}
+          </div>
+        )}
+      </div>
 
       {isStored && showTypeInHeader && (
         <h2 className="uppercase font-extrabold text-green-500 pt-4 flex flex-row justify-center">

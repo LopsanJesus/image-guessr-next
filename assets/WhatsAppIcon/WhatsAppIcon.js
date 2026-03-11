@@ -1,7 +1,6 @@
 "use client";
 
 import { isMobileOrTablet } from "@/helpers/device";
-import ReactGA from "react-ga";
 
 const whatsappLink = () => {
   const URL = typeof window !== "undefined" ? window.location.origin : "";
@@ -10,12 +9,6 @@ const whatsappLink = () => {
   );
 };
 
-const handleClick = () => {
-  ReactGA.event({
-    category: "Share",
-    action: "WhatsApp icon clicked",
-  });
-};
 
 const WhatsAppIcon = () => {
   return (
@@ -23,7 +16,7 @@ const WhatsAppIcon = () => {
       href={"https://" + whatsappLink()}
       target="_blank"
       rel="noreferrer"
-      onClick={handleClick}
+
     >
       <svg viewBox="0 0 32 32" className="h-10 w-10 fill-current text-gray-300 hover:text-green-400 cursor-pointer">
         <path

@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import ReactGA from "react-ga";
 import { getImageTranslations, getCityId } from "@/data/cities";
 import Image from "@/components/Image/Image";
 import Portal from "@/components/Portal/Portal";
@@ -20,22 +19,12 @@ const GuessModal = ({
   const cityId = getCityId(imageName);
   const hints = getHints(cityId);
 
-  const getLabel = () => "Level: " + level + " - Imagen: " + imageName;
-
-  const trackHit = () =>
-    ReactGA.event({ category: "Image", action: "Image guess hit", label: getLabel() });
-
-  const trackError = () =>
-    ReactGA.event({ category: "Image", action: "Image guess error", label: getLabel() + " - tried: " + modalInput.current?.value });
-
   const checkGuess = () => {
     if (!modalInput.current) return;
     if (getImageTranslations(imageName).includes(modalInput.current.value.trim().toLowerCase())) {
       addHit();
-      trackHit();
     } else {
       setError(true);
-      trackError();
     }
   };
 
@@ -44,7 +33,6 @@ const GuessModal = ({
     if (next < hints.length && hintsLeft > 0) {
       setHintIndex(next);
       onUseHint();
-      ReactGA.event({ category: "Hint", action: "Hint used", label: getLabel() });
     }
   };
 

@@ -1,13 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import { SCORE_TO_UNLOCK_LEVEL } from "@/helpers/score";
+import useNavTransition from "@/hooks/useNavTransition";
 
 const ScoreHeader = ({ level, score, nextLevelExists }) => {
   const { t } = useTranslation();
-  const router = useRouter();
+  const navigate = useNavTransition();
   const nextLevel = parseInt(level) + 1;
   const isUnlocked = score >= SCORE_TO_UNLOCK_LEVEL;
 
@@ -26,18 +26,20 @@ const ScoreHeader = ({ level, score, nextLevelExists }) => {
 
       {/* Next level button — full width on mobile */}
       {nextLevelExists && (
-        <button
-          type="button"
-          disabled={!isUnlocked}
-          onClick={isUnlocked ? () => router.push("/play/level/" + nextLevel) : undefined}
-          className={`w-full py-2 rounded-xl font-bold text-sm transition-colors ${
-            isUnlocked
-              ? "bg-secondary text-primary hover:bg-yellow-400"
-              : "bg-secondary/20 text-white/30 cursor-not-allowed"
-          }`}
-        >
-          {t("Next level")}
-        </button>
+        <div className="flex justify-center mb-1">
+          <button
+            type="button"
+            disabled={!isUnlocked}
+            onClick={isUnlocked ? () => navigate("/play/level/" + nextLevel) : undefined}
+            className={`w-full sm:w-auto sm:px-10 py-2 rounded-xl font-bold text-sm transition-all active:scale-95 ${
+              isUnlocked
+                ? "bg-secondary text-primary hover:bg-yellow-400"
+                : "bg-secondary/20 text-white/30 cursor-not-allowed"
+            }`}
+          >
+            {t("Next level")}
+          </button>
+        </div>
       )}
     </div>
   );

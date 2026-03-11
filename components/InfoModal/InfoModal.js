@@ -94,7 +94,7 @@ const InfoModal = ({ onCloseInfoModal, level }) => {
               <button
                 type="button"
                 onClick={onCloseInfoModal}
-                className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors"
+                className="w-full py-2.5 rounded-xl bg-white hover:bg-white/90 text-primary font-semibold transition-colors"
               >
                 {t("Cancel")}
               </button>

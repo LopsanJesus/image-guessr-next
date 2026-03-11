@@ -2,7 +2,9 @@ import { Anton } from "next/font/google";
 import "./globals.css";
 import TopBar from "@/components/TopBar/TopBar";
 import I18nProvider from "@/components/I18nProvider";
+import PageTransition from "@/components/PageTransition/PageTransition";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration/ServiceWorkerRegistration";
 
 const anton = Anton({
   weight: "400",
@@ -30,12 +32,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${anton.variable}`} style={{ backgroundColor: "var(--bg-app)" }} suppressHydrationWarning>
+        <ServiceWorkerRegistration />
         <I18nProvider>
           <div className="router">
             <TopBar />
-            <div className="content">
+            <PageTransition>
               {children}
-            </div>
+            </PageTransition>
           </div>
         </I18nProvider>
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
