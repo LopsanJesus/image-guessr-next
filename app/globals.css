@@ -45,7 +45,7 @@ body {
 }
 
 .animate-page-enter {
-  animation: page-enter 0.3s ease-out both;
+  animation: page-enter 0.3s ease-out forwards;
 }
 
 .animate-page-exit {
