@@ -21,7 +21,7 @@ export const getLevelImages = (level) => {
 };
 
 const imagesMapping = {
-  image1: "adra",
+  image1: "agra",
   image2: "allianz-arena",
   image3: "amsterdam",
   image4: "angkor",

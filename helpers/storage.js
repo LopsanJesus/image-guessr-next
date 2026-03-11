@@ -45,6 +45,19 @@ export const getStoredArray = (key) => {
   return [];
 };
 
+export const HINTS_PREFIX = "hints";
+
+export const getStoredHintsLeft = (level, maxHints) => {
+  if (typeof window === "undefined") return maxHints;
+  const stored = localStorage.getItem(HINTS_PREFIX + level);
+  return stored !== null ? parseInt(stored, 10) : maxHints;
+};
+
+export const saveHintsLeft = (level, hintsLeft) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(HINTS_PREFIX + level, hintsLeft);
+};
+
 export const clearStorage = () => {
   if (typeof window === "undefined") return;
   let i18nextLng = getStoredItem("i18nextLng");

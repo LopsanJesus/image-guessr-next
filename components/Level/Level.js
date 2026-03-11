@@ -9,6 +9,8 @@ import {
   getStoredArray,
   CITIES_PREFIX,
   getLastLevelAchieved,
+  getStoredHintsLeft,
+  saveHintsLeft,
 } from "@/helpers/storage";
 import { SCORE_TO_UNLOCK_LEVEL } from "@/helpers/score";
 import GuessModal from "@/components/GuessModal/GuessModal";
@@ -44,7 +46,7 @@ const Level = () => {
     const stored = getStoredArray(CITIES_PREFIX + level);
     setStoredCities(stored);
     setScore(stored.length);
-    setHintsLeft(MAX_HINTS);
+    setHintsLeft(getStoredHintsLeft(level, MAX_HINTS));
   }, [level]);
 
   useEffect(() => {
@@ -171,7 +173,11 @@ const Level = () => {
           level={level}
           isStored={storedCities.includes(guessingCity.imageName)}
           hintsLeft={hintsLeft}
-          onUseHint={() => setHintsLeft((h) => Math.max(0, h - 1))}
+          onUseHint={() => setHintsLeft((h) => {
+            const next = Math.max(0, h - 1);
+            saveHintsLeft(level, next);
+            return next;
+          })}
         />
       )}
 

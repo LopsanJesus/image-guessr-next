@@ -19,7 +19,10 @@ const TopBar = () => {
           <div className="relative flex items-center justify-between h-16">
             <div className="flex items-center justify-start sm:items-stretch sm:justify-start">
               <div className="flex-shrink-0 flex items-center">
-                <span className="font-custom block text-secondary text-4xl font-medium p-2">
+                <span
+                  className="font-custom block text-secondary text-4xl font-medium p-2 cursor-pointer"
+                  onClick={() => navigate("/play")}
+                >
                   ImageGuessr
                 </span>
               </div>

@@ -73,7 +73,7 @@ const Image = ({ imageType, imageName, isStored, onClick, showTypeInHeader }) =>
           src={"/img/" + imageName + ".jpg"}
           onLoad={() => setLoaded(true)}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
-          alt="ImageGuessr"
+          alt={isStored ? cityNameToString(imageName, t) : "ImageGuessr"}
         />
         {isStored && !showTypeInHeader && (
           <div className="uppercase font-extrabold rounded-xl text-green-500 bg-white p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-lg">
