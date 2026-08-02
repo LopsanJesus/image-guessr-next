@@ -59,7 +59,14 @@ const Level = () => {
   const [guessingCity, setGuessingCity] = useState({});
 
   const lastLevelAchieved = getLastLevelAchieved();
-  const isInvalidLevel = parseInt(level) < 1 || lastLevelAchieved + 1 < parseInt(level);
+  const levelNumber = parseInt(level, 10);
+  // NaN (e.g. /play/level/foo) has to be rejected explicitly: every comparison
+  // against it is false, so it would otherwise pass as a valid level.
+  const isInvalidLevel =
+    Number.isNaN(levelNumber) ||
+    levelNumber < 1 ||
+    levelNumber > getNumberOfLevels() ||
+    lastLevelAchieved + 1 < levelNumber;
 
   useEffect(() => {
     if (isInvalidLevel) router.replace("/play");
@@ -68,7 +75,7 @@ const Level = () => {
   if (isInvalidLevel) return null;
 
   const images = getLevelImages(level);
-  const nextLevelExists = getNumberOfLevels() !== parseInt(level);
+  const nextLevelExists = getNumberOfLevels() !== levelNumber;
 
   const onGuessModalClose = () => {
     setShowModal(false);
@@ -181,7 +188,7 @@ const Level = () => {
         />
       )}
 
-      {showAlertModal && getNumberOfLevels() !== parseInt(level) && (
+      {showAlertModal && getNumberOfLevels() !== levelNumber && (
         <AlertModal level={level} setShowModal={setShowAlertModal} score={score} storedCities={storedCities} images={images} />
       )}
     </div>
