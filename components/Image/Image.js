@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import ImageTypeIcon from "@/components/ImageTypeIcon/ImageTypeIcon";
 import CheckIcon from "@/assets/CheckIcon/CheckIcon";
-import { getCityId } from "@/data/cities";
+import { getCityNameKey } from "@/data/cities";
 
 const getBorderColor = (type) => {
   switch (type) {
@@ -15,10 +15,7 @@ const getBorderColor = (type) => {
   }
 };
 
-const cityNameToString = (imageName, t) => {
-  const cityId = getCityId(imageName);
-  return t(cityId.split("-").join(" ").toUpperCase());
-};
+const cityNameToString = (imageName, t) => t(getCityNameKey(imageName));
 
 const Image = ({ imageType, imageName, isStored, onClick, showTypeInHeader }) => {
   const { t } = useTranslation();
