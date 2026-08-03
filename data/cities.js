@@ -9,7 +9,10 @@ export const getImageTranslations = (image) => {
 export const getCityId = (image) => imagesMapping[image] || image;
 
 export const getLevelImages = (level) => {
-  return levels[level].map((id) => {
+  const levelCities = levels[level];
+  if (!levelCities) return [];
+
+  return levelCities.map((id) => {
     const type = types[id];
     const translation = translations[id];
     const image = Object.keys(imagesMapping).find(

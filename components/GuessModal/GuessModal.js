@@ -60,10 +60,19 @@ const GuessModal = ({
 
             {/* Hint display */}
             {hintIndex !== null && (
-              <div className="mx-4 mb-2 px-4 py-2 rounded-lg bg-secondary/10 border border-secondary/30 text-center">
-                <span className="text-secondary font-mono tracking-widest text-lg font-bold">
-                  {hints[hintIndex]}
-                </span>
+              <div className="mx-4 mb-2 px-4 py-2 rounded-lg bg-secondary/10 border border-secondary/30 overflow-x-auto">
+                {/* One span per word: keeps each word on a single line and the
+                    word separation visible (HTML would collapse plain spaces) */}
+                <div className="flex flex-wrap justify-center gap-x-8 gap-y-1">
+                  {hints[hintIndex].map((word, i) => (
+                    <span
+                      key={i}
+                      className="text-secondary font-mono tracking-[0.2em] text-base sm:text-lg font-bold whitespace-nowrap"
+                    >
+                      {word}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
