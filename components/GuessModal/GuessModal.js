@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getImageTranslations, getCityId } from "@/data/cities";
+import { getImageTranslations, getCityNameKey } from "@/data/cities";
 import Image from "@/components/Image/Image";
 import Portal from "@/components/Portal/Portal";
 import { getHints } from "@/helpers/hints";
@@ -16,8 +16,9 @@ const GuessModal = ({
   const [error, setError] = useState(false);
   const [hintIndex, setHintIndex] = useState(null); // which hint is showing
 
-  const cityId = getCityId(imageName);
-  const hints = getHints(cityId);
+  // Hints are built from the name in the player's language ("Nueva York" for
+  // an es player, "New York" for an en one), not from the internal id.
+  const hints = getHints(t(getCityNameKey(imageName)));
 
   const checkGuess = () => {
     if (!modalInput.current) return;

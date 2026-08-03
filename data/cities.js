@@ -8,6 +8,11 @@ export const getImageTranslations = (image) => {
 
 export const getCityId = (image) => imagesMapping[image] || image;
 
+// i18n key holding the display name of a city: "image81" → "NEW YORK",
+// which translates to "New York" (en) or "Nueva York" (es).
+export const getCityNameKey = (image) =>
+  getCityId(image).split("-").join(" ").toUpperCase();
+
 export const getLevelImages = (level) => {
   const levelCities = levels[level];
   if (!levelCities) return [];

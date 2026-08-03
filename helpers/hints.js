@@ -1,8 +1,9 @@
 /**
- * Returns 3 progressive hints for a given city id (e.g. "new-york").
+ * Returns 3 progressive hints for an answer already written in the player's
+ * language (e.g. "Nueva York" in Spanish, "New York" in English).
  *
  * Each hint is an array of masked words, one entry per word of the answer:
- *   getHints("new-york") →
+ *   getHints("New York") →
  *     [["N _ _", "Y _ _ _"], ["N _ W", "Y _ R _"], ["N E W", "Y O R _"]]
  *
  * Returning the words separately (instead of a single string) is what keeps
@@ -13,23 +14,39 @@
  * then the even positions, then the rest — always round-robin across words so
  * every word progresses. Each hint reveals at least as many letters as the
  * previous one, and one letter always stays hidden.
+ *
+ * Punctuation ("Saint Peter's Square") is never masked: it is shown from the
+ * first hint and does not consume any of the reveal budget.
  */
 
 const HINT_RATIOS = [0, 0.5, 0.75];
 
-const buildRevealOrder = (words) => {
+const IS_LETTER = /[\p{L}\p{N}]/u;
+
+// Positions of the maskable characters of each word, in reading order.
+const getLetterPositions = (words) =>
+  words.map((word) =>
+    word
+      .split("")
+      .map((char, i) => (IS_LETTER.test(char) ? i : null))
+      .filter((i) => i !== null)
+  );
+
+const buildRevealOrder = (letterPositions) => {
   const order = [];
-  const longestWord = Math.max(...words.map((word) => word.length));
+  const longestWord = Math.max(...letterPositions.map((letters) => letters.length));
 
   // First letter of every word.
-  words.forEach((_, wordIndex) => order.push(`${wordIndex}:0`));
+  letterPositions.forEach((letters, wordIndex) => {
+    if (letters.length > 0) order.push(`${wordIndex}:${letters[0]}`);
+  });
 
   // Even positions first, then odd ones, spreading each pass over all words.
   [0, 1].forEach((parity) => {
     for (let i = 1; i < longestWord; i++) {
       if (i % 2 !== parity) continue;
-      words.forEach((word, wordIndex) => {
-        if (i < word.length) order.push(`${wordIndex}:${i}`);
+      letterPositions.forEach((letters, wordIndex) => {
+        if (i < letters.length) order.push(`${wordIndex}:${letters[i]}`);
       });
     }
   });
@@ -37,15 +54,18 @@ const buildRevealOrder = (words) => {
   return order;
 };
 
-export const getHints = (cityId) => {
-  // Use the canonical display form: "new-york" → ["NEW", "YORK"]
-  const words = cityId
-    .split("-")
+export const getHints = (answer) => {
+  const words = (answer || "")
+    .trim()
+    .split(/\s+/)
     .filter(Boolean)
     .map((word) => word.toUpperCase());
 
-  const totalLetters = words.reduce((total, word) => total + word.length, 0);
-  const order = buildRevealOrder(words);
+  if (words.length === 0) return HINT_RATIOS.map(() => []);
+
+  const letterPositions = getLetterPositions(words);
+  const totalLetters = letterPositions.reduce((total, letters) => total + letters.length, 0);
+  const order = buildRevealOrder(letterPositions);
   // Never give the whole answer away.
   const maxReveals = Math.max(1, totalLetters - 1);
 
@@ -58,7 +78,9 @@ export const getHints = (cityId) => {
     return words.map((word, wordIndex) =>
       word
         .split("")
-        .map((char, i) => (revealed.has(`${wordIndex}:${i}`) ? char : "_"))
+        .map((char, i) =>
+          !IS_LETTER.test(char) || revealed.has(`${wordIndex}:${i}`) ? char : "_"
+        )
         .join(" ")
     );
   });
